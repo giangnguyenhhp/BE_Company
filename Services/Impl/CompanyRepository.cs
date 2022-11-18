@@ -32,7 +32,10 @@ public class CompanyRepository : ICompanyRepository
 
     public Company UpdateCompany(long id, UpdateCompany request)
     {
-        var company = _context.Company.FirstOrDefault(x => x.CompanyId == id);
+        var company = _context.Company
+            .Include(x=>x.Departments)!
+            .ThenInclude(x=>x.Employees)
+            .FirstOrDefault(x => x.CompanyId == id);
         if (company == null)
         {
             throw new Exception("Company not existed.");
@@ -92,5 +95,10 @@ public class CompanyRepository : ICompanyRepository
         _context.Company.Remove(company);
          _context.SaveChanges();
         return company;
+    }
+
+    public List<Department> GetDepartmentByCompany()
+    {
+        throw new NotImplementedException();
     }
 }

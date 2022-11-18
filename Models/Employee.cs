@@ -10,7 +10,7 @@ public class Employee
     public long EmployeeId { get; set; }
     public string Name { get; set; }
     public string Address { get; set; }
-    public DateTime Birth { get; set; }
+    public string Birth { get; set; }
     public Department? Department { get; set; }
     public Company? Company { get; set; }
 }

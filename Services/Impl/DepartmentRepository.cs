@@ -33,7 +33,10 @@ public class DepartmentRepository : IDepartmentRepository
 
     public Department UpdateDepartment(long id, UpdateDepartment request)
     {
-        var department = _context.Department.FirstOrDefault(x => x.DepartmentId == id);
+        var department = _context.Department
+            .Include(x=>x.Companies)!
+            .ThenInclude(x=>x.Employees)
+            .FirstOrDefault(x => x.DepartmentId == id);
 
         if (department == null)
         {
@@ -41,9 +44,9 @@ public class DepartmentRepository : IDepartmentRepository
         }
 
         var companies = _context.Company
-            .Where(x => request.CompanyId != null && request.CompanyId.Contains(x.CompanyId)).ToList();
+            .Where(x => request.CompanyId.Contains(x.CompanyId)).ToList();
         var employees = _context.Employee
-            .Where(x => request.EmployeeId != null && request.EmployeeId.Contains(x.EmployeeId)).ToList();
+            .Where(x => request.EmployeeId.Contains(x.EmployeeId)).ToList();
 
         department.Name = request.Name;
         department.NumberOf = request.NumberOf;
@@ -64,7 +67,8 @@ public class DepartmentRepository : IDepartmentRepository
     {
         var department = new Department
         {
-            Name = request.Name
+            Name = request.Name,
+            NumberOf = request.NumberOf
         };
         if (_context.Department.Any(x => x.Name == request.Name))
         {

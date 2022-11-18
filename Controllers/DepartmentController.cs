@@ -36,7 +36,7 @@ namespace BE_Company.Controllers
 
         // PUT: api/Department/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("update/{id}")]
         public IActionResult UpdateDepartment(long id,[FromBody] UpdateDepartment request)
         {
             return Ok(_departmentRepository.UpdateDepartment(id, request));
@@ -51,7 +51,7 @@ namespace BE_Company.Controllers
         }
 
         // DELETE: api/Department/5
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public IActionResult DeleteCompany(long id)
         {
             return Ok(_departmentRepository.DeleteCompany(id));

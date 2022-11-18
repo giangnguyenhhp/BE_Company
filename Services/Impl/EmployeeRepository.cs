@@ -15,8 +15,8 @@ public class EmployeeRepository : IEmployeeRepository
 
     public List<Employee> GetAllEmployees()
     {
-        return _context.Employee.Include(x=>x.Company)
-            .ThenInclude(x=>x!.Departments)
+        return _context.Employee.Include(x => x.Company)
+            .ThenInclude(x => x!.Departments)
             .ToList();
     }
 
@@ -58,15 +58,17 @@ public class EmployeeRepository : IEmployeeRepository
         employee.Company = company;
 
         if (_context.Employee.Any(x => x.Company != null
-                                       && x.Department != null 
-                                       && x.Name == request.Name 
-                                       && x.Address == request.Address 
-                                       && x.Birth == request.Birth 
-                                       && x.Department.DepartmentId == request.DepartmentId 
-                                       && x.Company.CompanyId == request.CompanyId))
+                                       && x.Department != null
+                                       && x.Name == request.Name
+                                       && x.Address == request.Address
+                                       && x.Birth == request.Birth
+                                       && x.Department.DepartmentId == request.DepartmentId
+                                       && x.Company.CompanyId == request.CompanyId
+            ))
         {
             throw new Exception("Employee is existed");
         }
+
         _context.SaveChanges();
         return employee;
     }
@@ -94,10 +96,11 @@ public class EmployeeRepository : IEmployeeRepository
     public Employee DeleteEmployee(long id)
     {
         var employee = _context.Employee.FirstOrDefault(x => x.EmployeeId == id);
-        if (employee==null)
+        if (employee == null)
         {
             throw new Exception("Employee is not existed");
         }
+
         _context.Employee.Remove(employee);
         _context.SaveChanges();
         return employee;
