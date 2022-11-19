@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BE_Company.Models.Auth;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace BE_Company.Models;
 
-public class MasterDbContext : IdentityDbContext<IdentityUser<string>,IdentityRole<string>,string,IdentityUserClaim<string>,IdentityUserRole<string>,IdentityUserLogin<string>,IdentityRoleClaim<string>,IdentityUserToken<string>>
+public class MasterDbContext : IdentityDbContext<User,Role,string,IdentityUserClaim<string>,IdentityUserRole<string>,IdentityUserLogin<string>,IdentityRoleClaim<string>,IdentityUserToken<string>>
 {
     public DbSet<Company> Company { get; set; }
     public DbSet<Employee> Employee { get; set; }

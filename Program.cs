@@ -1,11 +1,12 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using BE_Company.Models;
+using BE_Company.Models.Auth;
 using BE_Company.Services;
-using BE_Company.Services.Auth;
+using BE_Company.Services.Authenticate;
 using BE_Company.Services.CustomJson;
 using BE_Company.Services.Impl;
-using BE_Company.Services.Impl.Auth;
+using BE_Company.Services.Impl.Authenticate;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,17 @@ builder.Services.AddCors(options =>
         });
 });
 
+// Connect to PostgreSQL Database
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+//For Entity Framework
+builder.Services.AddDbContext<MasterDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+//For Identity Framework
+builder.Services.AddIdentity<User, Role>().AddEntityFrameworkStores<MasterDbContext>()
+    .AddDefaultTokenProviders();
+
 // Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -37,18 +49,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-builder.Services.AddScoped<IAuthenticateRepository,AuthenticateRepository>();
+builder.Services.AddScoped<IRoleRepository,RoleRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-// Connect to PostgreSQL Database
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-//For Entity Framework
-builder.Services.AddDbContext<MasterDbContext>(options =>
-    options.UseNpgsql(connectionString));
-
-//For Identity Framework
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<MasterDbContext>()
-    .AddDefaultTokenProviders();
 
 //Adding Authentication
 builder.Services.AddAuthentication(options =>
