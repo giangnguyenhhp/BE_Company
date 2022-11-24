@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BE_Company.Models;
+using BE_Company.Models.Auth;
 using BE_Company.Models.Request.Department;
 using BE_Company.Services;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace BE_Company.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DepartmentController : ControllerBase
     {
         private readonly MasterDbContext _context;
@@ -22,6 +25,7 @@ namespace BE_Company.Controllers
 
         // GET: api/Department
         [HttpGet]
+        [Authorize(Roles = SystemPermissions.ReadDepartment)]
         public IActionResult GetAllDepartment()
         {
             return Ok(_departmentRepository.GetAllDepartment());
@@ -29,6 +33,7 @@ namespace BE_Company.Controllers
 
         // GET: api/Department/5
         [HttpGet("{id}")]
+        [Authorize(Roles = SystemPermissions.ReadDepartment)]
         public IActionResult GetDepartment(long id)
         {
             return Ok(_departmentRepository.GetDepartment(id));
@@ -37,7 +42,8 @@ namespace BE_Company.Controllers
         // PUT: api/Department/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("update/{id}")]
-        public IActionResult UpdateDepartment(long id,[FromBody] UpdateDepartment request)
+        [Authorize(Roles = SystemPermissions.UpdateDepartment)]
+        public IActionResult UpdateDepartment(long id, [FromBody] UpdateDepartment request)
         {
             return Ok(_departmentRepository.UpdateDepartment(id, request));
         }
@@ -45,6 +51,7 @@ namespace BE_Company.Controllers
         // POST: api/Department
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = SystemPermissions.CreateDepartment)]
         public IActionResult CreateDepartment([FromBody] CreateDepartment request)
         {
             return Ok(_departmentRepository.CreateDepartment(request));
@@ -52,14 +59,10 @@ namespace BE_Company.Controllers
 
         // DELETE: api/Department/5
         [HttpDelete("delete/{id}")]
+        [Authorize(Roles = SystemPermissions.DeleteDepartment)]
         public IActionResult DeleteCompany(long id)
         {
             return Ok(_departmentRepository.DeleteCompany(id));
-        }
-
-        private bool CompanyExists(long id)
-        {
-            return (_context.Company?.Any(e => e.CompanyId == id)).GetValueOrDefault();
         }
     }
 }

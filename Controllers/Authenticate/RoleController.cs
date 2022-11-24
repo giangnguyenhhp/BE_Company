@@ -1,10 +1,13 @@
-﻿using BE_Company.Models.Request.Role;
+﻿using BE_Company.Models.Auth;
+using BE_Company.Models.Request.Role;
 using BE_Company.Services.Authenticate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BE_Company.Controllers.Authenticate;
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles =SystemPermissions.AdminAccess)]
 public class RoleController : ControllerBase
 {
     private readonly IRoleRepository _roleRepository;

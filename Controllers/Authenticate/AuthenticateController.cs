@@ -1,11 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using BE_Company.Models;
 using BE_Company.Models.Auth;
 using BE_Company.Models.Request.Auth;
-using BE_Company.Services.Authenticate;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
@@ -17,11 +18,15 @@ public class AuthenticateController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly UserManager<User> _userManager;
+    private readonly RoleManager<Role> _roleManager;
+    private readonly MasterDbContext _dbContext;
 
-    public AuthenticateController( IConfiguration configuration, UserManager<User> userManager)
+    public AuthenticateController( IConfiguration configuration, UserManager<User> userManager, RoleManager<Role> roleManager, MasterDbContext dbContext)
     {
         _configuration = configuration;
         _userManager = userManager;
+        _roleManager = roleManager;
+        _dbContext = dbContext;
     }
     //Method GetToken when login
     private JwtSecurityToken GetToken(IEnumerable<Claim> authClaims)
@@ -45,29 +50,38 @@ public class AuthenticateController : ControllerBase
         var user = await _userManager.FindByNameAsync(request.Username);
         if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password)) return Unauthorized();
         
-        //Lấy tất cả role trong user đăng nhâp : GetRoleAsync
+        //Lấy tên tất cả role trong user đăng nhâp : GetRoleAsync,sau đó lấy ra list các role để check claim
         var roles = await _userManager.GetRolesAsync(user);
+        var roleList = await _dbContext.Roles.Where(x=>x.Name != null && roles.Contains(x.Name)).ToListAsync();
 
-        if (user.UserName != null)
+        if (user.UserName == null) return Unauthorized();
+        var authClaims = new List<Claim>
         {
-            var authClaims = new List<Claim>()
-            {
-                new(ClaimTypes.Name, user.UserName),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
+            new(ClaimTypes.Name, user.UserName),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
                 
-            //Lấy role của user để add vào authClaims trong token
-            authClaims.AddRange(roles.Select(userRole => new Claim(ClaimTypes.Role,userRole)));
-
-            var token = GetToken(authClaims);
-            return Ok(new
+        //Lấy role của user để add vào authClaims trong token
+        authClaims.AddRange(roles.Select(userRole => new Claim(ClaimTypes.Role,userRole)));
+        
+        //lấy các claim trong role để add vào authClaims trong token
+        foreach (var role in roleList)
+        {
+            var listClaim = await _roleManager.GetClaimsAsync(role);
+            if (listClaim.Any())
             {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-                expiration = token.ValidTo,
-            });
+                authClaims.AddRange(listClaim);
+            }
         }
 
-        return Unauthorized();
+        var token = GetToken(authClaims);
+        return Ok(new
+        {
+            token = new JwtSecurityTokenHandler().WriteToken(token),
+            expiration = token.ValidTo,
+            claims = authClaims
+        });
+
     }
     
 }
