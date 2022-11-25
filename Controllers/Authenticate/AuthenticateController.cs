@@ -4,7 +4,7 @@ using System.Text;
 using BE_Company.Models;
 using BE_Company.Models.Auth;
 using BE_Company.Models.Request.Auth;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;    
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -65,13 +65,21 @@ public class AuthenticateController : ControllerBase
         authClaims.AddRange(roles.Select(userRole => new Claim(ClaimTypes.Role,userRole)));
         
         //lấy các claim trong role để add vào authClaims trong token
+        var claims = new List<Claim>();
         foreach (var role in roleList)
         {
-            var listClaim = await _roleManager.GetClaimsAsync(role);
-            if (listClaim.Any())
+            var claimInRole = await _roleManager.GetClaimsAsync(role);
+            if (claimInRole.Any())
             {
-                authClaims.AddRange(listClaim);
+               claims.AddRange(claimInRole);
             }
+        }
+        
+        
+        //Nếu claims khác null thì add vào authClaims
+        if (claims.Any())
+        {
+            authClaims.AddRange(claims);
         }
 
         var token = GetToken(authClaims);
@@ -79,7 +87,7 @@ public class AuthenticateController : ControllerBase
         {
             token = new JwtSecurityTokenHandler().WriteToken(token),
             expiration = token.ValidTo,
-            claims = authClaims
+            claims = claims.Select(x=>x.Value)
         });
 
     }

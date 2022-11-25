@@ -1,8 +1,10 @@
 ﻿using BE_Company.Models.Auth;
 using BE_Company.Models.Request.Auth;
+using BE_Company.Models.Request.User;
 using BE_Company.Services.Authenticate;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BE_Company.Services.Impl.Authenticate;
 
@@ -17,7 +19,7 @@ public class UserRepository : ControllerBase, IUserRepository
         _roleManager = roleManager;
     }
 
-    public async Task<IActionResult> Register(RegisterRequest request)
+    public async Task<IActionResult> Register(RegisterUserRequest request)
     {
         var checkUser = await _userManager.FindByNameAsync(request.UserName);
         if (checkUser != null)
@@ -56,7 +58,7 @@ public class UserRepository : ControllerBase, IUserRepository
             });
     }
 
-    public async Task<IActionResult> RegisterAdmin(RegisterRequest request)
+    public async Task<IActionResult> RegisterAdmin(RegisterUserRequest request)
     {
         var checkUser = await _userManager.FindByNameAsync(request.UserName);
         if (checkUser != null)
@@ -90,5 +92,61 @@ public class UserRepository : ControllerBase, IUserRepository
                 new Response { Status = "Error", Message = "Create user failed!" })
             : Ok(new Response
             {Message = "User created successfully",Status = "Success"});
+    }
+
+    public async Task<List<User>> GetAllUsers()
+    {
+        return await _userManager.Users.ToListAsync();
+    }
+
+    public async Task<IActionResult> DeleteUser(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+            return StatusCode(StatusCodes.Status500InternalServerError, new Response
+            {
+                Status = "Error",
+                Message = "User not found!"
+            });
+        await _userManager.DeleteAsync(user);
+        return Ok(new Response
+        {
+            Message = "User deleted successfully",
+            Status = "Success"
+        });
+    }
+
+    public async Task<IActionResult> RegisterForAdmin(RegisterUserRequest request)
+    {
+        var checkUser = await _userManager.FindByNameAsync(request.UserName);
+        if (checkUser != null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new Response { Status = "Error", Message = "User already exists!" });
+        }
+
+        User user = new()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Email = request.Email,
+            SecurityStamp = Guid.NewGuid().ToString(),
+            UserName = request.UserName,
+        };
+
+        //Tạo user mới bằng method _userManager.CreateAsync(user,password)
+        var result = await _userManager.CreateAsync(user, request.Password);
+        
+        //Add Role mình muốn vào user vừa tạo
+        if (request.Roles != null)
+        {
+            await _userManager.AddToRolesAsync(user, request.Roles);
+        }
+
+        //Kiểm tra xem tạo user mới có thành công không
+        return !result.Succeeded
+            ? StatusCode(StatusCodes.Status500InternalServerError,
+                new Response { Status = "Error", Message = "Create user failed!" })
+            : Ok(new Response
+                {Message = "User created successfully",Status = "Success"});
     }
 }

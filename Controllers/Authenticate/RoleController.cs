@@ -29,7 +29,7 @@ public class RoleController : ControllerBase
         return Ok(await _roleRepository.CreateRole(request));
     }
 
-    [HttpPost("map-role-claim")]
+    [HttpPost("map-permissions")]
     public async Task<IActionResult> MapPermissions(string id,[FromBody] MapPermissionsRequest request)
     {
         return Ok(await _roleRepository.MapPermissions(id,request));

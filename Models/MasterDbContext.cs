@@ -25,5 +25,5 @@ public class MasterDbContext : IdentityDbContext<User,Role,string,IdentityUserCl
                 entityType.SetTableName(tableName.Substring(6));
             }
         }
-    }
+    } 
 }

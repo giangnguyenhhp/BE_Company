@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BE_Company.Models.Request.Auth;
+namespace BE_Company.Models.Request.User;
 
-public class RegisterRequest
+public class RegisterUserRequest
 {
     [Required(ErrorMessage = "Yêu cầu nhập tên đăng nhập")]
     public string UserName { get; set; }
@@ -16,4 +16,6 @@ public class RegisterRequest
     
     [Compare("Password", ErrorMessage = "Mật khẩu lặp lại không chính xác")]
     public string ConfirmPassword { get; set; }
+
+    public List<string>? Roles { get; set; }
 }
