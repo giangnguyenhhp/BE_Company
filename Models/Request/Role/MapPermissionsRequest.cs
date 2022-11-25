@@ -2,7 +2,7 @@
 
 namespace BE_Company.Models.Request.Role;
 
-public class MapRoleClaimRequest
+public class MapPermissionsRequest
 {
     public List<string> RoleClaims { get; set; }
     

@@ -22,4 +22,10 @@ public class UserController : ControllerBase
     {
         return Ok(await _userRepository.Register(request));
     }
+
+    [HttpPost("register-admin")]
+    public async Task<ActionResult> RegisterAdmin([FromBody] RegisterRequest request)
+    {
+        return Ok(await _userRepository.RegisterAdmin(request));
+    }
 }

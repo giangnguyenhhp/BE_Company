@@ -1,4 +1,5 @@
-﻿using BE_Company.Models;
+﻿using System.Security.Claims;
+using BE_Company.Models;
 using BE_Company.Models.Auth;
 using BE_Company.Models.Request.Role;
 using BE_Company.Services.Authenticate;
@@ -74,6 +75,32 @@ public class RoleRepository : IRoleRepository
         }
         
         await _roleManager.DeleteAsync(checkRole);
+        await _dbContext.SaveChangesAsync();
+        return checkRole;
+    }
+
+    public async Task<Role> MapPermissions(string id, MapPermissionsRequest request)
+    {
+        var checkRole = _roleManager.Roles.FirstOrDefault(x => x.Id == id);
+        if (checkRole == null)
+        {
+            throw new Exception("Role is not exist");
+        }
+
+        if (!request.RoleClaims.Any()) throw new Exception("Permissions is not valid!!!");
+
+        //Lấy ra các claim cũ trong role và xóa đi
+        var listClaim = await _roleManager.GetClaimsAsync(checkRole);
+        foreach (var claim in listClaim)
+        {
+            await _roleManager.RemoveClaimAsync(checkRole, claim);
+        }
+
+        //Add các claim mới vào trong role
+        foreach (var claim in request.RoleClaims)
+        {
+            await _roleManager.AddClaimAsync(checkRole, new Claim(ClaimTypes.Role, claim));
+        }
         await _dbContext.SaveChangesAsync();
         return checkRole;
     }
