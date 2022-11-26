@@ -91,7 +91,7 @@ public class UserRepository : ControllerBase, IUserRepository
             ? StatusCode(StatusCodes.Status500InternalServerError,
                 new Response { Status = "Error", Message = "Create user failed!" })
             : Ok(new Response
-            {Message = "User created successfully",Status = "Success"});
+                { Message = "User created successfully", Status = "Success" });
     }
 
     public async Task<List<User>> GetAllUsers()
@@ -135,7 +135,7 @@ public class UserRepository : ControllerBase, IUserRepository
 
         //Tạo user mới bằng method _userManager.CreateAsync(user,password)
         var result = await _userManager.CreateAsync(user, request.Password);
-        
+
         //Add Role mình muốn vào user vừa tạo
         if (request.Roles != null)
         {
@@ -147,6 +147,43 @@ public class UserRepository : ControllerBase, IUserRepository
             ? StatusCode(StatusCodes.Status500InternalServerError,
                 new Response { Status = "Error", Message = "Create user failed!" })
             : Ok(new Response
-                {Message = "User created successfully",Status = "Success"});
+                { Message = "User created successfully", Status = "Success" });
+    }
+
+    public async Task<IActionResult> Update(string id, UpdateUserRequest request)
+    {
+        var checkUser = await _userManager.FindByIdAsync(id);
+        if (checkUser == null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new Response { Status = "Error", Message = "User not existed" });
+        }
+        
+        //Delete toàn bộ các role cũ của user
+        var roles = await _userManager.GetRolesAsync(checkUser);
+        await _userManager.RemoveFromRolesAsync(checkUser, roles);
+
+        checkUser.UserName = request.UserName;
+        checkUser.Email = request.Email;
+        checkUser.PhoneNumber = request.PhoneNumber;
+
+        if (request.Roles.Any())
+        {
+            await _userManager.AddToRolesAsync(checkUser, request.Roles);
+        }
+
+        await _userManager.UpdateAsync(checkUser);
+        return Ok(new Response { Status = "Success", Message = "User updated successfully" });
+    }
+
+    public async Task<List<Role>> GetRoleByUserId(string id)
+    {
+        var checkUser = await _userManager.FindByIdAsync(id);
+        if (checkUser == null) throw new Exception("User not existed!!");
+        //Lấy ra listRole<string> từ user bằng method GetRolesAsync
+        var roles = await _userManager.GetRolesAsync(checkUser);
+        //Lấy ra List<Role> của user
+        var listRole = await _roleManager.Roles.Where(x => x.Name != null && roles.Contains(x.Name)).ToListAsync();
+        return listRole;
     }
 }

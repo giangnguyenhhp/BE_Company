@@ -21,7 +21,14 @@ public class RoleRepository : IRoleRepository
 
     public async Task<List<Role>> GetAllRoles()
     {
-        return await _roleManager.Roles.ToListAsync();
+        var roles = await _roleManager.Roles.ToListAsync();
+        foreach (var role in roles)
+        {
+            var claims = await _roleManager.GetClaimsAsync(role);
+            role.RoleClaims = claims;
+        }
+
+        return roles;
     }
 
     public async Task<Role> CreateRole(CreateRoleRequest request)
@@ -79,15 +86,15 @@ public class RoleRepository : IRoleRepository
         return checkRole;
     }
 
-    public async Task<Role> MapPermissions(string id, MapPermissionsRequest request)
+    public async Task<Role> MapPermissions(MapPermissionsRequest request)
     {
-        var checkRole = _roleManager.Roles.FirstOrDefault(x => x.Id == id);
+        var checkRole = _roleManager.Roles.FirstOrDefault(x => x.Id == request.RoleId);
         if (checkRole == null)
         {
             throw new Exception("Role is not exist");
         }
 
-        if (!request.RoleClaims.Any()) throw new Exception("Permissions is not valid!!!");
+        if (!request.Permissions.Any()) throw new Exception("Permissions is not valid!!!");
 
         //Lấy ra các claim cũ trong role và xóa đi
         var listClaim = await _roleManager.GetClaimsAsync(checkRole);
@@ -97,7 +104,7 @@ public class RoleRepository : IRoleRepository
         }
 
         //Add các claim mới vào trong role
-        foreach (var claim in request.RoleClaims)
+        foreach (var claim in request.Permissions)
         {
             await _roleManager.AddClaimAsync(checkRole, new Claim(ClaimTypes.Role, claim));
         }

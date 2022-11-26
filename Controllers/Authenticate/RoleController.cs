@@ -23,6 +23,12 @@ public class RoleController : ControllerBase
         return Ok(await _roleRepository.GetAllRoles());
     }
 
+    [HttpGet("permissions")]
+    public IActionResult GetPermissions()
+    {
+        return Ok(SystemPermissions.DefaultPermissions);
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequest request)
     {
@@ -30,9 +36,9 @@ public class RoleController : ControllerBase
     }
 
     [HttpPost("map-permissions")]
-    public async Task<IActionResult> MapPermissions(string id,[FromBody] MapPermissionsRequest request)
+    public async Task<IActionResult> MapPermissions([FromBody] MapPermissionsRequest request)
     {
-        return Ok(await _roleRepository.MapPermissions(id,request));
+        return Ok(await _roleRepository.MapPermissions(request));
     }
 
     [HttpPut("update/{id}")]

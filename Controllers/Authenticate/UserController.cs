@@ -24,6 +24,12 @@ public class UserController : ControllerBase
         return Ok(await _userRepository.GetAllUsers());
     }
 
+    [HttpGet("get-role-by-user-id/{id}")]
+    public async Task<IActionResult> GetRoleByUserId(string id)
+    {
+        return Ok(await _userRepository.GetRoleByUserId(id));
+    }
+
     [HttpPost("register")]
     public async Task<ActionResult> Register([FromBody] RegisterUserRequest request)
     {
@@ -40,6 +46,12 @@ public class UserController : ControllerBase
     public async Task<ActionResult> RegisterForAdmin([FromBody] RegisterUserRequest request)
     {
         return Ok(await _userRepository.RegisterForAdmin(request));
+    }
+
+    [HttpPut("update/{id}")]
+    public async Task<IActionResult> Update(string id, [FromBody] UpdateUserRequest request)
+    {
+        return Ok(await _userRepository.Update(id, request));
     }
 
     [HttpDelete("delete/{id}")]

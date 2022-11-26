@@ -12,4 +12,6 @@ public interface IUserRepository
     public Task<List<User>> GetAllUsers();
     public Task<IActionResult> DeleteUser(string id);
     public Task<IActionResult> RegisterForAdmin(RegisterUserRequest request);
+    public Task<IActionResult> Update(string id, UpdateUserRequest request);
+    public Task<List<Role>> GetRoleByUserId(string id);
 }

@@ -10,5 +10,5 @@ public interface IRoleRepository
     public Task<Role> CreateRole(CreateRoleRequest request);
     public Task<Role> UpdateRole(string id, UpdateRoleRequest request);
     public Task<Role> DeleteRole(string id);
-    public Task<Role> MapPermissions(string id,MapPermissionsRequest request);
+    public Task<Role> MapPermissions(MapPermissionsRequest request);
 }
