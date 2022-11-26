@@ -94,7 +94,7 @@ public class RoleRepository : IRoleRepository
             throw new Exception("Role is not exist");
         }
 
-        if (!request.Permissions.Any()) throw new Exception("Permissions is not valid!!!");
+        if (request.Permissions != null && !request.Permissions.Any()) throw new Exception("Permissions is not valid!!!");
 
         //Lấy ra các claim cũ trong role và xóa đi
         var listClaim = await _roleManager.GetClaimsAsync(checkRole);

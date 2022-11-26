@@ -176,14 +176,13 @@ public class UserRepository : ControllerBase, IUserRepository
         return Ok(new Response { Status = "Success", Message = "User updated successfully" });
     }
 
-    public async Task<List<Role>> GetRoleByUserId(string id)
+    public async Task<List<string>> GetRoleByUserId(string id)
     {
         var checkUser = await _userManager.FindByIdAsync(id);
         if (checkUser == null) throw new Exception("User not existed!!");
+        
         //Lấy ra listRole<string> từ user bằng method GetRolesAsync
         var roles = await _userManager.GetRolesAsync(checkUser);
-        //Lấy ra List<Role> của user
-        var listRole = await _roleManager.Roles.Where(x => x.Name != null && roles.Contains(x.Name)).ToListAsync();
-        return listRole;
+        return roles.ToList();
     }
 }
