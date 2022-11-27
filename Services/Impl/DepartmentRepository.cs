@@ -44,9 +44,9 @@ public class DepartmentRepository : IDepartmentRepository
         }
 
         var companies = _context.Company
-            .Where(x => request.CompanyId.Contains(x.CompanyId)).ToList();
+            .Where(x => request.CompanyName.Contains(x.NameCompany)).ToList();
         var employees = _context.Employee
-            .Where(x => request.EmployeeId.Contains(x.EmployeeId)).ToList();
+            .Where(x => request.EmployeeName.Contains(x.Name)).ToList();
 
         department.Name = request.Name;
         department.NumberOf = request.NumberOf;
@@ -90,5 +90,33 @@ public class DepartmentRepository : IDepartmentRepository
         _context.Department.Remove(department);
         _context.SaveChanges();
         return department;
+    }
+
+    public List<string> GetCompanyByDepartment(long id)
+    {
+        var department = _context.Department.FirstOrDefault(x => x.DepartmentId == id);
+        if (department == null)
+        {
+            throw new Exception("Department not existed!");
+        }
+
+        var listCompany = _context.Company.Where(x => x.Departments.Contains(department))
+            .Select(x => x.NameCompany)
+            .ToList();
+        return listCompany;
+    }
+
+    public List<string> GetEmployeeByDepartment(long id)
+    {
+        var department = _context.Department.FirstOrDefault(x => x.DepartmentId == id);
+        if (department == null)
+        {
+            throw new Exception("Department not existed!");
+        }
+
+        var listEmployee = _context.Employee.Where(x => x.Department.Name == department.Name)
+            .Select(x => x.Name)
+            .ToList();
+        return listEmployee;
     }
 }

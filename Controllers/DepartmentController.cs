@@ -39,6 +39,20 @@ namespace BE_Company.Controllers
             return Ok(_departmentRepository.GetDepartment(id));
         }
 
+        [HttpGet("get-company-by-department/{id}")]
+        [Authorize(Roles = SystemPermissions.ReadCompany)]
+        public IActionResult GetCompanyByDepartment(long id)
+        {
+            return Ok(_departmentRepository.GetCompanyByDepartment(id));
+        }
+
+        [HttpGet("get-employee-by-department/{id}")]
+        [Authorize(Roles = SystemPermissions.ReadEmployee)]
+        public IActionResult GetEmployeeByDepartment(long id)
+        {
+            return Ok(_departmentRepository.GetEmployeeByDepartment(id));
+        }
+
         // PUT: api/Department/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("update/{id}")]

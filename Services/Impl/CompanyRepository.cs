@@ -15,26 +15,27 @@ public class CompanyRepository : ICompanyRepository
 
     public List<Company> GetAllCompany()
     {
-        return  _context.Company.Include(x=>x.Departments)!
-            .ThenInclude(x=>x.Employees)
+        return _context.Company.Include(x => x.Departments)!
+            .ThenInclude(x => x.Employees)
             .ToList();
     }
 
     public Company GetCompanyById(long id)
     {
-        var company =  _context.Company.Find(id);
+        var company = _context.Company.Find(id);
         if (company == null)
         {
             throw new Exception("Company not existed.");
         }
+
         return company;
     }
 
     public Company UpdateCompany(long id, UpdateCompany request)
     {
         var company = _context.Company
-            .Include(x=>x.Departments)!
-            .ThenInclude(x=>x.Employees)
+            .Include(x => x.Departments)!
+            .ThenInclude(x => x.Employees)
             .FirstOrDefault(x => x.CompanyId == id);
         if (company == null)
         {
@@ -42,23 +43,16 @@ public class CompanyRepository : ICompanyRepository
         }
 
         var employees = _context.Employee
-            .Where(x => request.EmployeeId.Contains(x.EmployeeId)).ToList();
+            .Where(x => request.EmployeeName.Contains(x.Name)).ToList();
         var departments = _context.Department
-            .Where(x => request.DepartmentId.Contains(x.DepartmentId)).ToList();
+            .Where(x => request.DepartmentName.Contains(x.Name)).ToList();
 
         company.NameCompany = request.NameCompany;
         company.Address = request.Address;
         company.Description = request.Description;
         company.Departments = departments;
         company.Employees = employees;
-        
-        if (_context.Company.Any(x => x.Address == request.Address
-                                      && x.NameCompany == request.NameCompany
-                                      && x.Description == request.Description))
-        {
-            throw new Exception("Company already existed.");
-        }
-        
+
         _context.SaveChanges();
         return company;
     }
@@ -71,14 +65,14 @@ public class CompanyRepository : ICompanyRepository
             NameCompany = request.NameCompany,
             Description = request.Description,
         };
-        
+
         if (_context.Company.Any(x => x.Address == request.Address
                                       && x.NameCompany == request.NameCompany
                                       && x.Description == request.Description))
         {
             throw new Exception("Company already existed.");
         }
-        
+
         _context.Company.Add(company);
         _context.SaveChanges();
         return company;
@@ -87,18 +81,40 @@ public class CompanyRepository : ICompanyRepository
     public Company DeleteCompany(long id)
     {
         var company = _context.Company.FirstOrDefault(x => x.CompanyId == id);
-        if (company==null)
+        if (company == null)
         {
             throw new Exception("Company not existed.");
         }
 
         _context.Company.Remove(company);
-         _context.SaveChanges();
+        _context.SaveChanges();
         return company;
     }
 
-    public List<Department> GetDepartmentByCompany()
+    public List<string> GetDepartmentByCompany(long id)
     {
-        throw new NotImplementedException();
+        var company = _context.Company.FirstOrDefault(x => x.CompanyId == id);
+        if (company == null)
+        {
+            throw new Exception("Company not existed.");
+        }
+
+        var departments = _context.Department
+            .Where(x => x.Companies.Contains(company))
+            .Select(x => x.Name).ToList();
+        return departments;
+    }
+
+    public List<string> GetEmployeeByCompany(long id)
+    {
+        var company = _context.Company.FirstOrDefault(x => x.CompanyId == id);
+        if (company == null)
+        {
+            throw new Exception("Company not existed.");
+        }
+
+        var employees = _context.Employee
+            .Where(x => x.Company.CompanyId == id).Select(x => x.Name).ToList();
+        return employees;
     }
 }

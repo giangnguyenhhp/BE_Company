@@ -10,5 +10,6 @@ public interface ICompanyRepository
     public Company UpdateCompany(long id, UpdateCompany request);
     public Company CreateCompany(CreateCompany request);
     public Company DeleteCompany(long id);
-    public List<Department> GetDepartmentByCompany();
+    public List<string> GetDepartmentByCompany(long id);
+    public List<string> GetEmployeeByCompany(long id);
 }

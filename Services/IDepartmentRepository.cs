@@ -11,4 +11,6 @@ public interface IDepartmentRepository
     public Department UpdateDepartment(long id, UpdateDepartment request);
     public Department CreateDepartment(CreateDepartment request);
     public Department DeleteCompany(long id);
+    public List<string> GetCompanyByDepartment(long id);
+    public List<string> GetEmployeeByDepartment(long id);
 }

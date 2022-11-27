@@ -34,11 +34,18 @@ public class CompanyController : ControllerBase
         return Ok(_companyRepository.GetCompanyById(id));
     }
 
-    [HttpGet("get-department-by-company")]
+    [HttpGet("get-department-by-company/{id}")]
     [Authorize(Roles = SystemPermissions.ReadCompany)]
-    public IActionResult GetDepartmentByCompany()
+    public IActionResult GetDepartmentByCompany(long id)
     {
-        return Ok(_companyRepository.GetDepartmentByCompany());
+        return Ok(_companyRepository.GetDepartmentByCompany(id));
+    }
+
+    [HttpGet("get-employee-by-company/{id}")]
+    [Authorize(Roles = SystemPermissions.ReadCompany)]
+    public IActionResult GetEmployeeByCompany(long id)
+    {
+        return Ok(_companyRepository.GetEmployeeByCompany(id));
     }
 
     // PUT: api/Company/update/5
