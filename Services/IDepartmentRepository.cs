@@ -6,11 +6,11 @@ namespace BE_Company.Services;
 
 public interface IDepartmentRepository
 {
-    public List<Department> GetAllDepartment();
-    public Department GetDepartment(long id);
-    public Department UpdateDepartment(long id, UpdateDepartment request);
-    public Department CreateDepartment(CreateDepartment request);
-    public Department DeleteCompany(long id);
-    public List<string> GetCompanyByDepartment(long id);
-    public List<string> GetEmployeeByDepartment(long id);
+    public Task<List<Department>> GetAllDepartment();
+    public Task<Department> GetDepartment(long id);
+    public Task<Department> UpdateDepartment(long id, UpdateDepartment request);
+    public Task<Department> CreateDepartment(CreateDepartment request);
+    public Task<Department> DeleteCompany(long id);
+    public Task<List<string>> GetCompanyByDepartment(long id);
+    public Task<List<string>> GetEmployeeByDepartment(long id);
 }

@@ -13,16 +13,16 @@ public class EmployeeRepository : IEmployeeRepository
         _context = context;
     }
 
-    public List<Employee> GetAllEmployees()
+    public async Task<List<Employee>> GetAllEmployees()
     {
-        return _context.Employee.Include(x => x.Company)
+        return await _context.Employee.Include(x => x.Company)
             .ThenInclude(x => x!.Departments)
-            .ToList();
+            .ToListAsync();
     }
 
-    public Employee GetEmployeeById(long id)
+    public async Task<Employee> GetEmployeeById(long id)
     {
-        var employee = _context.Employee.FirstOrDefault(x => x.EmployeeId == id);
+        var employee =await _context.Employee.FirstOrDefaultAsync(x => x.EmployeeId == id);
         if (employee == null)
         {
             throw new Exception("Employee is not existed");
@@ -31,21 +31,21 @@ public class EmployeeRepository : IEmployeeRepository
         return employee;
     }
 
-    public Employee UpdateEmployee(long id, UpdateEmployee request)
+    public async Task<Employee> UpdateEmployee(long id, UpdateEmployee request)
     {
-        var employee = _context.Employee.FirstOrDefault(x => x.EmployeeId == id);
+        var employee =await _context.Employee.FirstOrDefaultAsync(x => x.EmployeeId == id);
         if (employee == null)
         {
             throw new Exception("Employee is not existed");
         }
 
-        var company = _context.Company.FirstOrDefault(x => x.CompanyId == request.CompanyId);
+        var company =await _context.Company.FirstOrDefaultAsync(x => x.CompanyId == request.CompanyId);
         if (company == null)
         {
             throw new Exception("Company is not existed");
         }
 
-        var department = _context.Department.FirstOrDefault(x => x.DepartmentId == request.DepartmentId);
+        var department =await _context.Department.FirstOrDefaultAsync(x => x.DepartmentId == request.DepartmentId);
         if (department == null)
         {
             throw new Exception("Department is not existed");
@@ -69,11 +69,11 @@ public class EmployeeRepository : IEmployeeRepository
             throw new Exception("Employee is existed");
         }
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return employee;
     }
 
-    public Employee CreateEmployee(CreateEmployee request)
+    public async Task<Employee> CreateEmployee(CreateEmployee request)
     {
         var employee = new Employee
         {
@@ -88,21 +88,21 @@ public class EmployeeRepository : IEmployeeRepository
             throw new Exception("Employee already existed");
         }
 
-        _context.Employee.Add(employee);
-        _context.SaveChanges();
+        await _context.Employee.AddAsync(employee);
+        await _context.SaveChangesAsync();
         return employee;
     }
 
-    public Employee DeleteEmployee(long id)
+    public async Task<Employee> DeleteEmployee(long id)
     {
-        var employee = _context.Employee.FirstOrDefault(x => x.EmployeeId == id);
+        var employee =await _context.Employee.FirstOrDefaultAsync(x => x.EmployeeId == id);
         if (employee == null)
         {
             throw new Exception("Employee is not existed");
         }
 
         _context.Employee.Remove(employee);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return employee;
     }
 }

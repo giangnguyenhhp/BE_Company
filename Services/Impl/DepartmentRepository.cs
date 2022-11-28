@@ -13,16 +13,16 @@ public class DepartmentRepository : IDepartmentRepository
         _context = context;
     }
 
-    public List<Department> GetAllDepartment()
+    public async Task<List<Department>> GetAllDepartment()
     {
-        return _context.Department.Include(x=>x.Companies)!
+        return await _context.Department.Include(x=>x.Companies)!
             .ThenInclude(x=>x.Employees)
-            .ToList();
+            .ToListAsync();
     }
 
-    public Department GetDepartment(long id)
+    public async Task<Department> GetDepartment(long id)
     {
-        var department = _context.Department.FirstOrDefault(x => x.DepartmentId == id);
+        var department =await _context.Department.FirstOrDefaultAsync(x => x.DepartmentId == id);
         if (department == null)
         {
             throw new Exception("Department not existed!");
@@ -31,22 +31,22 @@ public class DepartmentRepository : IDepartmentRepository
         return department;
     }
 
-    public Department UpdateDepartment(long id, UpdateDepartment request)
+    public async Task<Department> UpdateDepartment(long id, UpdateDepartment request)
     {
-        var department = _context.Department
+        var department =await _context.Department
             .Include(x=>x.Companies)!
             .ThenInclude(x=>x.Employees)
-            .FirstOrDefault(x => x.DepartmentId == id);
+            .FirstOrDefaultAsync(x => x.DepartmentId == id);
 
         if (department == null)
         {
             throw new Exception("Department not existed!");
         }
 
-        var companies = _context.Company
-            .Where(x => request.CompanyName.Contains(x.NameCompany)).ToList();
-        var employees = _context.Employee
-            .Where(x => request.EmployeeName.Contains(x.Name)).ToList();
+        var companies =await _context.Company
+            .Where(x => request.CompanyName.Contains(x.NameCompany)).ToListAsync();
+        var employees =await _context.Employee
+            .Where(x => request.EmployeeName.Contains(x.Name)).ToListAsync();
 
         department.Name = request.Name;
         department.NumberOf = request.NumberOf;
@@ -59,11 +59,11 @@ public class DepartmentRepository : IDepartmentRepository
             throw new Exception("Department already exists");
         }
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return department;
     }
 
-    public Department CreateDepartment(CreateDepartment request)
+    public async Task<Department> CreateDepartment(CreateDepartment request)
     {
         var department = new Department
         {
@@ -74,49 +74,49 @@ public class DepartmentRepository : IDepartmentRepository
         {
             throw new Exception("Department already existed");
         }
-        _context.Department.Add(department);
-        _context.SaveChanges();
+        await _context.Department.AddAsync(department);
+        await _context.SaveChangesAsync();
         return department;
     }
 
-    public Department DeleteCompany(long id)
+    public async Task<Department> DeleteCompany(long id)
     {
-        var department = _context.Department.FirstOrDefault(x => x.DepartmentId == id);
+        var department =await _context.Department.FirstOrDefaultAsync(x => x.DepartmentId == id);
         if (department == null)
         {
             throw new Exception("Department not existed!");
         }
         
         _context.Department.Remove(department);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return department;
     }
 
-    public List<string> GetCompanyByDepartment(long id)
+    public async Task<List<string>> GetCompanyByDepartment(long id)
     {
-        var department = _context.Department.FirstOrDefault(x => x.DepartmentId == id);
+        var department =await _context.Department.FirstOrDefaultAsync(x => x.DepartmentId == id);
         if (department == null)
         {
             throw new Exception("Department not existed!");
         }
 
-        var listCompany = _context.Company.Where(x => x.Departments.Contains(department))
+        var listCompany =await _context.Company.Where(x => x.Departments.Contains(department))
             .Select(x => x.NameCompany)
-            .ToList();
+            .ToListAsync();
         return listCompany;
     }
 
-    public List<string> GetEmployeeByDepartment(long id)
+    public async Task<List<string>> GetEmployeeByDepartment(long id)
     {
-        var department = _context.Department.FirstOrDefault(x => x.DepartmentId == id);
+        var department =await _context.Department.FirstOrDefaultAsync(x => x.DepartmentId == id);
         if (department == null)
         {
             throw new Exception("Department not existed!");
         }
 
-        var listEmployee = _context.Employee.Where(x => x.Department.Name == department.Name)
+        var listEmployee =await _context.Employee.Where(x => x.Department.Name == department.Name)
             .Select(x => x.Name)
-            .ToList();
+            .ToListAsync();
         return listEmployee;
     }
 }

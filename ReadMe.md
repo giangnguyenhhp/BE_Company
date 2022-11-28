@@ -11,7 +11,7 @@
 {1} -> Tên Controller
 {2} -> Tên Area
 options.ViewLocationFormats.Add("/MyView/{1}/{0}.cshtml" + RazorViewEngine.ViewExtension)
-## Truyền dữ liệu sáng View
+## Truyền dữ liệu sang View
 - Model
 - ViewData
 - TempData

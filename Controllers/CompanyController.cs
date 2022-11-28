@@ -21,56 +21,56 @@ public class CompanyController : ControllerBase
     // GET: api/Company
     [HttpGet]
     [Authorize(Roles = SystemPermissions.ReadCompany)]
-    public IActionResult GetAllCompany()
+    public async Task<IActionResult> GetAllCompany()
     {
-        return Ok(_companyRepository.GetAllCompany());
+        return Ok(await _companyRepository.GetAllCompany());
     }
 
     // GET: api/Company/5
     [HttpGet("{id}")]
     [Authorize(Roles = SystemPermissions.ReadCompany)]
-    public IActionResult GetCompany(long id)
+    public async Task<IActionResult> GetCompany(long id)
     {
-        return Ok(_companyRepository.GetCompanyById(id));
+        return Ok(await _companyRepository.GetCompanyById(id));
     }
 
     [HttpGet("get-department-by-company/{id}")]
     [Authorize(Roles = SystemPermissions.ReadCompany)]
-    public IActionResult GetDepartmentByCompany(long id)
+    public async Task<IActionResult> GetDepartmentByCompany(long id)
     {
-        return Ok(_companyRepository.GetDepartmentByCompany(id));
+        return Ok(await _companyRepository.GetDepartmentByCompany(id));
     }
 
     [HttpGet("get-employee-by-company/{id}")]
     [Authorize(Roles = SystemPermissions.ReadCompany)]
-    public IActionResult GetEmployeeByCompany(long id)
+    public async Task<IActionResult> GetEmployeeByCompany(long id)
     {
-        return Ok(_companyRepository.GetEmployeeByCompany(id));
+        return Ok(await _companyRepository.GetEmployeeByCompany(id));
     }
 
     // PUT: api/Company/update/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("update/{id}")]
     [Authorize(Roles = SystemPermissions.UpdateCompany)]
-    public IActionResult PutCompany(long id, [FromBody] UpdateCompany request)
+    public async Task<IActionResult> PutCompany(long id, [FromBody] UpdateCompany request)
     {
-        return Ok(_companyRepository.UpdateCompany(id, request));
+        return Ok(await _companyRepository.UpdateCompany(id, request));
     }
 
     // POST: api/Company
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
     [Authorize(Roles = SystemPermissions.CreateCompany)]
-    public IActionResult PostCompany([FromBody] CreateCompany request)
+    public async Task<IActionResult> PostCompany([FromBody] CreateCompany request)
     {
-        return Ok(_companyRepository.CreateCompany(request));
+        return Ok(await _companyRepository.CreateCompany(request));
     }
 
     // DELETE: api/Company/delete/5
     [HttpDelete("delete/{id}")]
     [Authorize(Roles = SystemPermissions.DeleteCompany)]
-    public IActionResult DeleteCompany(long id)
+    public async Task<IActionResult> DeleteCompany(long id)
     {
-        return Ok(_companyRepository.DeleteCompany(id));
+        return Ok(await _companyRepository.DeleteCompany(id));
     }
 }

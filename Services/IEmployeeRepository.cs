@@ -5,9 +5,9 @@ namespace BE_Company.Services;
 
 public interface IEmployeeRepository
 {
-    public List<Employee> GetAllEmployees();
-    public Employee GetEmployeeById(long id);
-    public Employee UpdateEmployee(long id, UpdateEmployee request);
-    public Employee CreateEmployee(CreateEmployee request);
-    public Employee DeleteEmployee(long id);
+    public Task<List<Employee>> GetAllEmployees();
+    public Task<Employee> GetEmployeeById(long id);
+    public Task<Employee> UpdateEmployee(long id, UpdateEmployee request);
+    public Task<Employee> CreateEmployee(CreateEmployee request);
+    public Task<Employee> DeleteEmployee(long id);
 }

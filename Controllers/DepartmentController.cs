@@ -26,57 +26,57 @@ namespace BE_Company.Controllers
         // GET: api/Department
         [HttpGet]
         [Authorize(Roles = SystemPermissions.ReadDepartment)]
-        public IActionResult GetAllDepartment()
+        public async Task<ActionResult> GetAllDepartment()
         {
-            return Ok(_departmentRepository.GetAllDepartment());
+            return Ok(await _departmentRepository.GetAllDepartment());
         }
 
         // GET: api/Department/5
         [HttpGet("{id}")]
         [Authorize(Roles = SystemPermissions.ReadDepartment)]
-        public IActionResult GetDepartment(long id)
+        public async Task<ActionResult> GetDepartment(long id)
         {
-            return Ok(_departmentRepository.GetDepartment(id));
+            return Ok(await _departmentRepository.GetDepartment(id));
         }
 
         [HttpGet("get-company-by-department/{id}")]
         [Authorize(Roles = SystemPermissions.ReadCompany)]
-        public IActionResult GetCompanyByDepartment(long id)
+        public async Task<ActionResult> GetCompanyByDepartment(long id)
         {
-            return Ok(_departmentRepository.GetCompanyByDepartment(id));
+            return Ok(await _departmentRepository.GetCompanyByDepartment(id));
         }
 
         [HttpGet("get-employee-by-department/{id}")]
         [Authorize(Roles = SystemPermissions.ReadEmployee)]
-        public IActionResult GetEmployeeByDepartment(long id)
+        public async Task<ActionResult> GetEmployeeByDepartment(long id)
         {
-            return Ok(_departmentRepository.GetEmployeeByDepartment(id));
+            return Ok(await _departmentRepository.GetEmployeeByDepartment(id));
         }
 
         // PUT: api/Department/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("update/{id}")]
         [Authorize(Roles = SystemPermissions.UpdateDepartment)]
-        public IActionResult UpdateDepartment(long id, [FromBody] UpdateDepartment request)
+        public async Task<ActionResult> UpdateDepartment(long id, [FromBody] UpdateDepartment request)
         {
-            return Ok(_departmentRepository.UpdateDepartment(id, request));
+            return Ok(await _departmentRepository.UpdateDepartment(id, request));
         }
 
         // POST: api/Department
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize(Roles = SystemPermissions.CreateDepartment)]
-        public IActionResult CreateDepartment([FromBody] CreateDepartment request)
+        public async Task<ActionResult> CreateDepartment([FromBody] CreateDepartment request)
         {
-            return Ok(_departmentRepository.CreateDepartment(request));
+            return Ok(await _departmentRepository.CreateDepartment(request));
         }
 
         // DELETE: api/Department/5
         [HttpDelete("delete/{id}")]
         [Authorize(Roles = SystemPermissions.DeleteDepartment)]
-        public IActionResult DeleteCompany(long id)
+        public async Task<ActionResult> DeleteCompany(long id)
         {
-            return Ok(_departmentRepository.DeleteCompany(id));
+            return Ok(await _departmentRepository.DeleteCompany(id));
         }
     }
 }

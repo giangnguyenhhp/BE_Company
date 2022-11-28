@@ -13,16 +13,16 @@ public class CompanyRepository : ICompanyRepository
         _context = context;
     }
 
-    public List<Company> GetAllCompany()
+    public async Task<List<Company>> GetAllCompany()
     {
-        return _context.Company.Include(x => x.Departments)!
+        return await _context.Company.Include(x => x.Departments)!
             .ThenInclude(x => x.Employees)
-            .ToList();
+            .ToListAsync();
     }
 
-    public Company GetCompanyById(long id)
+    public async Task<Company> GetCompanyById(long id)
     {
-        var company = _context.Company.Find(id);
+        var company =await _context.Company.FindAsync(id);
         if (company == null)
         {
             throw new Exception("Company not existed.");
@@ -31,21 +31,21 @@ public class CompanyRepository : ICompanyRepository
         return company;
     }
 
-    public Company UpdateCompany(long id, UpdateCompany request)
+    public async Task<Company> UpdateCompany(long id, UpdateCompany request)
     {
-        var company = _context.Company
+        var company =await _context.Company
             .Include(x => x.Departments)!
             .ThenInclude(x => x.Employees)
-            .FirstOrDefault(x => x.CompanyId == id);
+            .FirstOrDefaultAsync(x => x.CompanyId == id);
         if (company == null)
         {
             throw new Exception("Company not existed.");
         }
 
-        var employees = _context.Employee
-            .Where(x => request.EmployeeName.Contains(x.Name)).ToList();
-        var departments = _context.Department
-            .Where(x => request.DepartmentName.Contains(x.Name)).ToList();
+        var employees =await _context.Employee
+            .Where(x => request.EmployeeName.Contains(x.Name)).ToListAsync();
+        var departments =await _context.Department
+            .Where(x => request.DepartmentName.Contains(x.Name)).ToListAsync();
 
         company.NameCompany = request.NameCompany;
         company.Address = request.Address;
@@ -53,11 +53,11 @@ public class CompanyRepository : ICompanyRepository
         company.Departments = departments;
         company.Employees = employees;
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return company;
     }
 
-    public Company CreateCompany(CreateCompany request)
+    public async Task<Company> CreateCompany(CreateCompany request)
     {
         var company = new Company
         {
@@ -73,48 +73,48 @@ public class CompanyRepository : ICompanyRepository
             throw new Exception("Company already existed.");
         }
 
-        _context.Company.Add(company);
-        _context.SaveChanges();
+        await _context.Company.AddAsync(company);
+        await _context.SaveChangesAsync();
         return company;
     }
 
-    public Company DeleteCompany(long id)
+    public async Task<Company> DeleteCompany(long id)
     {
-        var company = _context.Company.FirstOrDefault(x => x.CompanyId == id);
+        var company =await _context.Company.FirstOrDefaultAsync(x => x.CompanyId == id);
         if (company == null)
         {
             throw new Exception("Company not existed.");
         }
 
         _context.Company.Remove(company);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return company;
     }
 
-    public List<string> GetDepartmentByCompany(long id)
+    public async Task<List<string>> GetDepartmentByCompany(long id)
     {
-        var company = _context.Company.FirstOrDefault(x => x.CompanyId == id);
+        var company =await _context.Company.FirstOrDefaultAsync(x => x.CompanyId == id);
         if (company == null)
         {
             throw new Exception("Company not existed.");
         }
 
-        var departments = _context.Department
+        var departments =await _context.Department
             .Where(x => x.Companies.Contains(company))
-            .Select(x => x.Name).ToList();
+            .Select(x => x.Name).ToListAsync();
         return departments;
     }
 
-    public List<string> GetEmployeeByCompany(long id)
+    public async Task<List<string>> GetEmployeeByCompany(long id)
     {
-        var company = _context.Company.FirstOrDefault(x => x.CompanyId == id);
+        var company =await _context.Company.FirstOrDefaultAsync(x => x.CompanyId == id);
         if (company == null)
         {
             throw new Exception("Company not existed.");
         }
 
-        var employees = _context.Employee
-            .Where(x => x.Company.CompanyId == id).Select(x => x.Name).ToList();
+        var employees =await _context.Employee
+            .Where(x => x.Company.CompanyId == id).Select(x => x.Name).ToListAsync();
         return employees;
     }
 }
